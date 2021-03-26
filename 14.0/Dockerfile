@@ -1,5 +1,5 @@
 FROM debian:buster-slim
-MAINTAINER Odoo S.A. <info@odoo.com>
+MAINTAINER Your info here <info@example.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
@@ -31,6 +31,8 @@ RUN apt-get update && \
         python3-xlrd \
         python3-xlwt \
         xz-utils \
+        # add custom python packages here
+        libmagic-dev \
     && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
     && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
@@ -54,11 +56,12 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main' > /etc/
 RUN npm install -g rtlcss
 
 # Install Odoo
+# Change version to match your downloaded package
 ENV ODOO_VERSION 14.0
-ARG ODOO_RELEASE=20201112
-ARG ODOO_SHA=1ab9abfb9193486aed1886146fe253af6d18d601
+# the below release needs to match the enterprise package you download exactly
+# if you're not sure, check the PKG-INFO file in the source files
+ARG ODOO_RELEASE=20201201
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
-    && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
     && rm -rf /var/lib/apt/lists/* odoo.deb
